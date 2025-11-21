@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { CodeEditor } from './CodeEditor'
 import { Terminal } from './Terminal'
@@ -15,20 +15,44 @@ interface WorkspaceClientProps {
     problem: any
     lesson: any
     userId: string
+    hints?: string[]
+    difficulty?: number
 }
 
-export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProps) {
-    const [code, setCode] = useState(problem.starterCode || '// Write your C code here\n')
+interface TestResult {
+    passed: boolean
+    input: string
+    expectedOutput: string
+    actualOutput: string
+    executionTime?: number
+    timeLimit?: number
+    description?: string
+}
+
+export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1 }: WorkspaceClientProps) {
+    const [testResults, setTestResults] = useState<TestResult[]>([]);
+    const [allTestsPassed, setAllTestsPassed] = useState(false);
+    const [code, setCode] = useState(problem?.starterCode || `#include <stdio.h>\n\nint main() {\n    // Viết code ở đây\n    return 0;\n}\n`)
     const [output, setOutput] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [status, setStatus] = useState<string | null>(null)
     const [isRunning, setIsRunning] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
+    // Update allTestsPassed whenever testResults change
+    useEffect(() => {
+        if (testResults.length > 0) {
+            setAllTestsPassed(testResults.every(t => t.passed))
+        } else {
+            setAllTestsPassed(false)
+        }
+    }, [testResults])
+
     const handleRun = async () => {
         setIsRunning(true)
         setOutput(null)
         setError(null)
+        setTestResults([])
         setStatus('Running...')
 
         try {
@@ -36,19 +60,34 @@ export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProp
             if (result.error) {
                 setError(result.error)
                 setStatus('Error')
+                setAllTestsPassed(false)
+            } else if ((result as any).testResults && (result as any).testResults.length > 0) {
+                // Show detailed test results
+                const results = (result as any).testResults
+                setTestResults(results)
+                const passedCount = results.filter((t: TestResult) => t.passed).length
+                setStatus(`${passedCount}/${results.length} test đúng`)
             } else {
+                // Fallback to simple output
                 setOutput(result.stdout ?? '')
                 if (result.stderr) setError(result.stderr)
-                setStatus(result.status?.description ?? null)
+                setStatus((result as any).status?.description ?? null)
+                setAllTestsPassed(false)
             }
         } catch (e) {
             setError('Failed to execute code')
+            setAllTestsPassed(false)
         } finally {
             setIsRunning(false)
         }
     }
 
     const handleSubmit = async () => {
+        if (!allTestsPassed) {
+            toast.error('Vui lòng chạy code và pass tất cả test cases trước khi nộp!')
+            return
+        }
+
         setIsSubmitting(true)
         setStatus('Submitting...')
 
@@ -59,7 +98,7 @@ export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProp
                 setStatus('Submission Failed')
             } else {
                 if (result.status === 'Passed') {
-                    toast.success('All test cases passed!')
+                    toast.success('✅ Tất cả test cases đã pass! Nộp bài thành công!')
                 } else {
                     toast.error('Some test cases failed')
                 }
@@ -87,7 +126,13 @@ export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProp
                     <ResizablePanelGroup direction="horizontal">
                         {/* Problem View (Left) */}
                         <ResizablePanel defaultSize={40} minSize={20} className="bg-white text-slate-900 border-r border-slate-200">
-                            <ProblemView content={problem.description} title={problem.title} />
+                            <ProblemView
+                                content={problem.description}
+                                title={problem.title}
+                                lessonContent={lesson?.content}
+                                hints={hints}
+                                difficulty={difficulty}
+                            />
                         </ResizablePanel>
 
                         <ResizableHandle className="w-1 bg-slate-700 hover:bg-blue-500 transition-colors" />
@@ -101,6 +146,7 @@ export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProp
                                         onSubmit={handleSubmit}
                                         isRunning={isRunning}
                                         isSubmitting={isSubmitting}
+                                        canSubmit={allTestsPassed}
                                     />
                                     <div className="flex-1 overflow-hidden">
                                         <CodeEditor
@@ -113,7 +159,7 @@ export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProp
                                 <ResizableHandle className="h-1 bg-slate-700 hover:bg-blue-500 transition-colors" />
 
                                 <ResizablePanel defaultSize={30} minSize={10} className="bg-[#1e1e1e] border-t border-slate-700">
-                                    <Terminal output={output} error={error} status={status} />
+                                    <Terminal output={output} error={error} status={status} testResults={testResults} />
                                 </ResizablePanel>
                             </ResizablePanelGroup>
                         </ResizablePanel>

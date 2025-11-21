@@ -1,15 +1,7 @@
-import dynamic from 'next/dynamic'
+import { prisma } from '@/lib/prisma'
+import { WorkspaceClient } from '@/components/workspace/WorkspaceClient'
 
-const WorkspaceClient = dynamic(() => import('@/components/workspace/WorkspaceClient').then(mod => ({ default: mod.WorkspaceClient })), {
-    loading: () => (
-        <div className="flex items-center justify-center h-screen bg-[#1a2332]">
-            <div className="text-white">Loading workspace...</div>
-        </div>
-    ),
-    ssr: false
-})
-
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function WorkspacePage({ params }: { params: Promise<{ moduleId: string, problemId: string }> }) {
     const { moduleId, problemId } = await params
@@ -31,5 +23,15 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
         })
     }
 
-    return <WorkspaceClient problem={problem} lesson={problem.lesson} userId={user.id} />
+    // Parse hints from JSON string if exists
+    let hints: string[] = []
+    if (problem.hints) {
+        try {
+            hints = JSON.parse(problem.hints)
+        } catch {
+            hints = []
+        }
+    }
+
+    return <WorkspaceClient problem={problem} lesson={problem.lesson} userId={user.id} hints={hints} difficulty={problem.difficultyLevel} />
 }

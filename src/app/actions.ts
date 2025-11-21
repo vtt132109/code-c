@@ -2,8 +2,6 @@
 
 import { prisma } from '@/lib/prisma'
 
-// const prisma = new PrismaClient()
-
 const JUDGE0_URL = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com'
 const JUDGE0_KEY = process.env.JUDGE0_API_KEY || ''
 
@@ -14,6 +12,7 @@ async function runJudge0(source_code: string, stdin: string) {
             stdout: Buffer.from('Mock Output: ' + stdin).toString('base64'),
             stderr: null,
             compile_output: null,
+            time: '0.001',
             status: { id: 3, description: 'Accepted' }
         }
     }
@@ -33,7 +32,9 @@ async function runJudge0(source_code: string, stdin: string) {
     })
 
     if (!response.ok) {
-        throw new Error(`Judge0 error: ${response.statusText}`)
+        const errorText = await response.text()
+        console.error('Judge0 API Error:', errorText)
+        throw new Error(`Lỗi Judge0: ${response.status} - ${response.statusText}`)
     }
 
     const result = await response.json()
@@ -44,33 +45,77 @@ export async function runCode(code: string, problemId: string) {
     const problem = await prisma.problem.findUnique({
         where: { id: problemId },
         include: {
-            testCases: {
-                where: { isHidden: false },
-                take: 1,
-            },
+            testCases: true,
         },
     })
 
     if (!problem || problem.testCases.length === 0) {
-        return { error: 'No test cases found' }
+        return { error: 'Không tìm thấy test case cho bài này' }
     }
 
-    const testCase = problem.testCases[0]
+    const testResults = []
 
-    try {
-        const result = await runJudge0(code, testCase.stdin)
+    // Run all test cases
+    for (const testCase of problem.testCases) {
+        try {
+            const result = await runJudge0(code, testCase.stdin)
 
-        const stdout = result.stdout ? Buffer.from(result.stdout, 'base64').toString('utf-8') : ''
-        const stderr = result.stderr ? Buffer.from(result.stderr, 'base64').toString('utf-8') : ''
-        const compile_output = result.compile_output ? Buffer.from(result.compile_output, 'base64').toString('utf-8') : ''
+            const stdout = result.stdout ? Buffer.from(result.stdout, 'base64').toString('utf-8').trim() : ''
+            const stderr = result.stderr ? Buffer.from(result.stderr, 'base64').toString('utf-8') : ''
+            const compile_output = result.compile_output ? Buffer.from(result.compile_output, 'base64').toString('utf-8') : ''
+            const expectedOutput = testCase.expectedOutput.trim()
 
-        return {
-            stdout,
-            stderr: stderr || compile_output,
-            status: result.status,
+            // Check if compilation failed
+            if (compile_output) {
+                return {
+                    error: compile_output,
+                    stderr: 'Lỗi biên dịch'
+                }
+            }
+
+            // Check if there's a runtime error
+            if (stderr && result.status?.id !== 3) {
+                testResults.push({
+                    passed: false,
+                    input: testCase.stdin,
+                    expectedOutput: expectedOutput,
+                    actualOutput: stderr || 'Runtime Error',
+                    executionTime: result.time ? Math.round(parseFloat(result.time) * 1000) : 0,
+                    timeLimit: problem.timeLimit * 1000,
+                    description: 'Runtime Error'
+                })
+                continue
+            }
+
+            // Compare output
+            const passed = stdout === expectedOutput
+            testResults.push({
+                passed,
+                input: testCase.stdin,
+                expectedOutput: expectedOutput,
+                actualOutput: stdout,
+                executionTime: result.time ? Math.round(parseFloat(result.time) * 1000) : 0,
+                timeLimit: problem.timeLimit * 1000,
+                description: passed ? 'Accepted' : 'Wrong answer'
+            })
+        } catch (e: any) {
+            testResults.push({
+                passed: false,
+                input: testCase.stdin,
+                expectedOutput: testCase.expectedOutput.trim(),
+                actualOutput: 'Error',
+                executionTime: 0,
+                timeLimit: problem.timeLimit * 1000,
+                description: e.message || 'Execution Error'
+            })
         }
-    } catch (e: any) {
-        return { error: e.message }
+    }
+
+    return {
+        testResults,
+        stdout: '',
+        stderr: '',
+        status: null
     }
 }
 

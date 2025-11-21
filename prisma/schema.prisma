@@ -7,68 +7,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String       @id @default(cuid())
-  name        String?
-  email       String       @unique
-  image       String?
-  xp          Int          @default(0)
-  streak      Int          @default(0)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  submissions Submission[]
-}
-
 model Module {
-  id      String   @id @default(cuid())
-  title   String
-  order   Int      @unique
-  lessons Lesson[]
+  id       String   @id @default(cuid())
+  title    String
+  order    Int      @unique
+  lessons  Lesson[]
 }
 
 model Lesson {
   id       String    @id @default(cuid())
   title    String
-  content  String // Markdown content
+  content  String    @db.Text
   order    Int
+  module   Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId String
-  module   Module    @relation(fields: [moduleId], references: [id])
   problems Problem[]
 
   @@unique([moduleId, order])
 }
 
 model Problem {
-  id           String       @id @default(cuid())
-  title        String
-  description  String // Markdown content
-  difficulty   String       @default("Easy") // Easy, Medium, Hard
-  starterCode  String
-  solutionCode String?
-  timeLimit    Int          @default(2) // Seconds
-  lessonId     String
-  lesson       Lesson       @relation(fields: [lessonId], references: [id])
-  testCases    TestCase[]
-  submissions  Submission[]
+  id              String       @id @default(cuid())
+  title           String
+  description     String       @db.Text
+  difficulty      String
+  difficultyLevel Int          @default(1) // 1-10 scale
+  hints           String?      @db.Text // JSON array of hints
+  starterCode     String       @db.Text
+  solution        String?      @db.Text
+  timeLimit       Float        @default(1.0)
+  lesson          Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId        String
+  testCases       TestCase[]
+  submissions     Submission[]
 }
 
 model TestCase {
   id             String  @id @default(cuid())
-  stdin          String
-  expectedOutput String
-  isHidden       Boolean @default(false)
+  stdin          String  @db.Text
+  expectedOutput String  @db.Text
+  problem        Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   problemId      String
-  problem        Problem @relation(fields: [problemId], references: [id])
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  xp          Int          @default(0)
+  submissions Submission[]
 }
 
 model Submission {
   id        String   @id @default(cuid())
-  code      String
-  status    String // Passed, Failed, Error
-  output    String?
+  code      String   @db.Text
+  status    String
+  output    String?  @db.Text
   createdAt DateTime @default(now())
-  userId    String
   user      User     @relation(fields: [userId], references: [id])
-  problemId String
+  userId    String
   problem   Problem  @relation(fields: [problemId], references: [id])
+  problemId String
 }

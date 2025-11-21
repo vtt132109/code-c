@@ -13,9 +13,10 @@ interface EditorActionbarProps {
     onSubmit: () => void
     isRunning: boolean
     isSubmitting: boolean
+    canSubmit?: boolean
 }
 
-export function EditorActionbar({ onRun, onSubmit, isRunning, isSubmitting }: EditorActionbarProps) {
+export function EditorActionbar({ onRun, onSubmit, isRunning, isSubmitting, canSubmit = false }: EditorActionbarProps) {
     return (
         <div className="h-12 bg-[#1e1e1e] border-b border-slate-700 flex items-center justify-between px-4">
             <div className="flex items-center gap-2">
@@ -46,8 +47,12 @@ export function EditorActionbar({ onRun, onSubmit, isRunning, isSubmitting }: Ed
 
                 <Button
                     onClick={onSubmit}
-                    disabled={isRunning || isSubmitting}
-                    className="h-8 bg-white hover:bg-slate-200 text-slate-900 gap-2 px-4 font-medium"
+                    disabled={isRunning || isSubmitting || !canSubmit}
+                    className={`h-8 gap-2 px-4 font-medium transition-all ${canSubmit
+                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                        : 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
+                        }`}
+                    title={!canSubmit ? 'Chạy code và pass tất cả test cases trước khi nộp' : 'Nộp bài'}
                 >
                     {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     Nộp bài

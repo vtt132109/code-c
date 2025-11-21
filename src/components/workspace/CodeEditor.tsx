@@ -17,10 +17,14 @@ export function CodeEditor({ value, onChange }: CodeEditorProps) {
                 onChange={onChange}
                 options={{
                     minimap: { enabled: false },
-                    fontSize: 14,
-                    fontFamily: 'JetBrains Mono, Fira Code, monospace',
+                    fontSize: 18,
+                    fontFamily: "'Cascadia Code', 'Source Code Pro', 'Consolas', monospace",
+                    lineHeight: 24,
                     scrollBeyondLastLine: false,
                     automaticLayout: true,
+                    fontLigatures: true,
+                    cursorBlinking: 'smooth',
+                    smoothScrolling: true,
                 }}
             />
         </div>

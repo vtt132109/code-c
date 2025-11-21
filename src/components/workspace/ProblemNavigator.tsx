@@ -1,30 +1,37 @@
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
-import { cn } from '@/lib/utils'
+'use client'
 
-export function ProblemNavigator({ title }: { title: string }) {
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Home } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+interface ProblemNavigatorProps {
+    title: string
+}
+
+export function ProblemNavigator({ title }: ProblemNavigatorProps) {
+    const router = useRouter()
+
     return (
-        <div className="h-12 bg-[#1a2332] border-b border-slate-700 flex items-center justify-between px-4 text-white">
-            <div className="flex items-center gap-4">
-                <button className="p-1 hover:bg-white/10 rounded">
-                    <ChevronLeft className="w-5 h-5 text-slate-400" />
-                </button>
-                <h1 className="font-medium text-sm truncate max-w-md">{title}</h1>
-            </div>
-
-            <div className="flex items-center gap-2">
-                <div className="flex gap-1 mr-4">
-                    {[1, 2, 3, 4, 5].map((num) => (
-                        <div key={num} className={cn(
-                            "w-8 h-8 flex items-center justify-center rounded text-xs font-medium cursor-pointer",
-                            num === 1 ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                        )}>
-                            {num}
-                        </div>
-                    ))}
+        <div className="bg-[#1a2332] border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/')}
+                    className="text-slate-300 hover:text-white hover:bg-slate-700"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Quay lại
+                </Button>
+                <div className="h-6 w-px bg-slate-600" />
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <Home className="w-4 h-4" />
+                    <span>/</span>
+                    <span className="text-white font-medium">{title}</span>
                 </div>
-                <button className="p-1 hover:bg-white/10 rounded">
-                    <ChevronRight className="w-5 h-5 text-slate-400" />
-                </button>
+            </div>
+            <div className="flex items-center gap-2">
+                {/* Additional actions can go here */}
             </div>
         </div>
     )
