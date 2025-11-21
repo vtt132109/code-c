@@ -5,6 +5,22 @@ import { prisma } from '@/lib/prisma'
 const PISTON_URL = 'https://emkc.org/api/v2/piston/execute'
 
 async function runPiston(source_code: string, stdin: string) {
+    // Use mock response in development to avoid rate limits
+    if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Development mode: Using mock compiler')
+        // Simulate compilation and execution
+        await new Promise(resolve => setTimeout(resolve, 100)) // Simulate delay
+
+        return {
+            run: {
+                stdout: stdin || '', // Echo input as output for testing
+                stderr: '',
+                code: 0,
+                output: stdin || ''
+            }
+        }
+    }
+
     try {
         const response = await fetch(PISTON_URL, {
             method: 'POST',
@@ -29,10 +45,20 @@ async function runPiston(source_code: string, stdin: string) {
         if (!response.ok) {
             const errorText = await response.text()
             console.error('Piston API Error:', errorText)
+
+            // If rate limited, throw helpful error
+            if (response.status === 429) {
+                throw new Error('Rate limit exceeded. Please wait a moment and try again.')
+            }
+
             throw new Error(`Lỗi Piston: ${response.status} - ${response.statusText}`)
         }
 
         const result = await response.json()
+
+        // Add small delay to avoid rate limiting on next request
+        await new Promise(resolve => setTimeout(resolve, 200))
+
         return result
     } catch (error) {
         console.error('Piston execution error:', error)
