@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
 export const dynamic = 'force-dynamic'
 

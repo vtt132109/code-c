@@ -1,8 +1,8 @@
 'use server'
 
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
 const JUDGE0_URL = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com'
 const JUDGE0_KEY = process.env.JUDGE0_API_KEY || ''

@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
-import { CodeEditor } from "./CodeEditor"
-import { Terminal } from "./Terminal"
-import { ProblemView } from "./ProblemView"
-import { Button } from "@/components/ui/button"
-import { Play, Send } from "lucide-react"
-import { runCode, submitCode } from "@/app/actions"
+import { CodeEditor } from './CodeEditor'
+import { Terminal } from './Terminal'
+import { ProblemView } from './ProblemView'
+import { WorkspaceSidebar } from './WorkspaceSidebar'
+import { ProblemNavigator } from './ProblemNavigator'
+import { EditorActionbar } from './EditorActionbar'
+import { runCode, submitCode } from '@/app/actions'
+import { toast } from 'sonner'
 
 interface WorkspaceClientProps {
     problem: any
@@ -16,79 +18,107 @@ interface WorkspaceClientProps {
 }
 
 export function WorkspaceClient({ problem, lesson, userId }: WorkspaceClientProps) {
-    const [code, setCode] = useState(problem.starterCode)
+    const [code, setCode] = useState(problem.starterCode || '// Write your C code here\n')
     const [output, setOutput] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const [status, setStatus] = useState<'idle' | 'running' | 'success' | 'error'>('idle')
+    const [status, setStatus] = useState<string | null>(null)
+    const [isRunning, setIsRunning] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleRun = async () => {
-        setStatus('running')
+        setIsRunning(true)
         setOutput(null)
         setError(null)
+        setStatus('Running...')
 
-        const result = await runCode(code, problem.id)
-
-        if (result.error) {
-            setError(result.error)
-            setStatus('error')
-        } else {
-            setOutput(result.stdout ?? '')
-            if (result.stderr) {
-                setError(result.stderr)
-                setStatus('error')
+        try {
+            const result = await runCode(code, problem.id)
+            if (result.error) {
+                setError(result.error)
+                setStatus('Error')
             } else {
-                setStatus('success')
+                setOutput(result.stdout ?? '')
+                if (result.stderr) setError(result.stderr)
+                setStatus(result.status?.description ?? null)
             }
+        } catch (e) {
+            setError('Failed to execute code')
+        } finally {
+            setIsRunning(false)
         }
     }
 
     const handleSubmit = async () => {
-        setStatus('running')
-        const result = await submitCode(code, problem.id, userId)
-        setStatus('idle')
-        if (result.status === 'Passed') {
-            alert('All tests passed! +10 XP')
-        } else {
-            alert('Wrong Answer or Error.')
+        setIsSubmitting(true)
+        setStatus('Submitting...')
+
+        try {
+            const result = await submitCode(code, problem.id, userId)
+            if (result.error) {
+                toast.error(result.error)
+                setStatus('Submission Failed')
+            } else {
+                if (result.status === 'Passed') {
+                    toast.success('All test cases passed!')
+                } else {
+                    toast.error('Some test cases failed')
+                }
+                setStatus(result.status ?? null)
+            }
+        } catch (e) {
+            toast.error('Submission error')
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
     return (
-        <div className="h-screen w-full bg-zinc-950 text-zinc-100 flex flex-col">
-            <header className="h-14 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-900">
-                <div className="font-bold text-lg">C-Mastery</div>
-                <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" onClick={handleRun} disabled={status === 'running'}>
-                        <Play className="w-4 h-4 mr-2" /> Run
-                    </Button>
-                    <Button size="sm" onClick={handleSubmit} disabled={status === 'running'}>
-                        <Send className="w-4 h-4 mr-2" /> Submit
-                    </Button>
+        <div className="flex h-screen bg-[#1a2332] text-slate-300 overflow-hidden font-sans">
+            {/* Left Sidebar */}
+            <WorkspaceSidebar />
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+                {/* Top Navigation */}
+                <ProblemNavigator title={problem.title} />
+
+                {/* Resizable Workspace */}
+                <div className="flex-1 overflow-hidden">
+                    <ResizablePanelGroup direction="horizontal">
+                        {/* Problem View (Left) */}
+                        <ResizablePanel defaultSize={40} minSize={20} className="bg-white text-slate-900 border-r border-slate-200">
+                            <ProblemView content={problem.description} title={problem.title} />
+                        </ResizablePanel>
+
+                        <ResizableHandle className="w-1 bg-slate-700 hover:bg-blue-500 transition-colors" />
+
+                        {/* Editor & Terminal (Right) */}
+                        <ResizablePanel defaultSize={60} minSize={30}>
+                            <ResizablePanelGroup direction="vertical">
+                                <ResizablePanel defaultSize={70} minSize={20} className="flex flex-col bg-[#1e1e1e]">
+                                    <EditorActionbar
+                                        onRun={handleRun}
+                                        onSubmit={handleSubmit}
+                                        isRunning={isRunning}
+                                        isSubmitting={isSubmitting}
+                                    />
+                                    <div className="flex-1 overflow-hidden">
+                                        <CodeEditor
+                                            value={code}
+                                            onChange={(val: string | undefined) => setCode(val || '')}
+                                        />
+                                    </div>
+                                </ResizablePanel>
+
+                                <ResizableHandle className="h-1 bg-slate-700 hover:bg-blue-500 transition-colors" />
+
+                                <ResizablePanel defaultSize={30} minSize={10} className="bg-[#1e1e1e] border-t border-slate-700">
+                                    <Terminal output={output} error={error} status={status} />
+                                </ResizablePanel>
+                            </ResizablePanelGroup>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
                 </div>
-            </header>
-
-            <div className="flex-1 overflow-hidden">
-                <ResizablePanelGroup direction="horizontal">
-                    <ResizablePanel defaultSize={40} minSize={30}>
-                        <ProblemView theory={lesson.content} problem={problem} />
-                    </ResizablePanel>
-
-                    <ResizableHandle withHandle />
-
-                    <ResizablePanel defaultSize={60}>
-                        <ResizablePanelGroup direction="vertical">
-                            <ResizablePanel defaultSize={70}>
-                                <CodeEditor code={code} onChange={(val: string | undefined) => setCode(val || '')} />
-                            </ResizablePanel>
-
-                            <ResizableHandle withHandle />
-
-                            <ResizablePanel defaultSize={30}>
-                                <Terminal output={output} error={error} status={status} />
-                            </ResizablePanel>
-                        </ResizablePanelGroup>
-                    </ResizablePanel>
-                </ResizablePanelGroup>
             </div>
         </div>
     )

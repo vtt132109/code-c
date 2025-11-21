@@ -3,29 +3,34 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface TerminalProps {
     output: string | null
-    error?: string | null
-    status: 'idle' | 'running' | 'success' | 'error'
+    error: string | null
+    status: string | null
 }
 
 export function Terminal({ output, error, status }: TerminalProps) {
     return (
-        <div className="h-full w-full bg-zinc-950 p-4 font-mono text-sm text-zinc-300 flex flex-col">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
-                <span className="font-bold">Console</span>
-                <span className="text-xs text-zinc-500">
-                    {status === 'running' ? 'Running...' : status === 'idle' ? 'Ready' : 'Finished'}
+        <div className="h-full w-full bg-[#1e1e1e] p-4 font-mono text-sm text-slate-300 flex flex-col border-t border-slate-700">
+            <div className="flex items-center justify-between pb-2 mb-2">
+                <span className="font-bold text-white">Kiểm thử</span>
+                <span className="text-xs text-slate-500">
+                    {status || 'Ready'}
                 </span>
             </div>
             <ScrollArea className="flex-1">
-                {status === 'running' && <div className="text-yellow-500">Compiling and executing...</div>}
                 {error && (
-                    <div className="bg-red-950/30 border border-red-900/50 p-2 rounded text-red-400 mb-2 whitespace-pre-wrap">
-                        {error}
+                    <div className="bg-red-950/30 border border-red-900/50 p-3 rounded mb-2 text-red-400">
+                        <div className="font-semibold mb-1">❌ Lỗi</div>
+                        <pre className="whitespace-pre-wrap text-xs">{error}</pre>
                     </div>
                 )}
-                {output && <div className="whitespace-pre-wrap">{output}</div>}
-                {!output && !error && status !== 'running' && (
-                    <div className="text-zinc-600 italic">No output to display</div>
+                {output && (
+                    <div className="bg-slate-800/50 border border-slate-700 p-3 rounded">
+                        <div className="font-semibold mb-1 text-green-400">✅ Kết quả</div>
+                        <pre className="whitespace-pre-wrap text-xs">{output}</pre>
+                    </div>
+                )}
+                {!output && !error && (
+                    <div className="text-slate-600 italic text-center py-8">Nhấn "Chạy thử" để kiểm tra code</div>
                 )}
             </ScrollArea>
         </div>

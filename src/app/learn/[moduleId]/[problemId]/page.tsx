@@ -1,7 +1,13 @@
-import { PrismaClient } from '@prisma/client'
-import { WorkspaceClient } from '@/components/workspace/WorkspaceClient'
+import dynamic from 'next/dynamic'
 
-const prisma = new PrismaClient()
+const WorkspaceClient = dynamic(() => import('@/components/workspace/WorkspaceClient').then(mod => ({ default: mod.WorkspaceClient })), {
+    loading: () => (
+        <div className="flex items-center justify-center h-screen bg-[#1a2332]">
+            <div className="text-white">Loading workspace...</div>
+        </div>
+    ),
+    ssr: false
+})
 
 export const dynamic = 'force-dynamic'
 
