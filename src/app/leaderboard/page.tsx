@@ -93,11 +93,11 @@ export default async function LeaderboardPage() {
                                     </div>
                                     <div className="col-span-6 flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isCurrentUser ? 'bg-blue-600' : 'bg-slate-800'}`}>
-                                            <span className="font-bold text-white">{user.name.charAt(0).toUpperCase()}</span>
+                                            <span className="font-bold text-white">{(user.name || 'User').charAt(0).toUpperCase()}</span>
                                         </div>
                                         <div>
                                             <div className={`font-medium ${isCurrentUser ? 'text-blue-400' : 'text-slate-200'}`}>
-                                                {user.name} {isCurrentUser && '(Bạn)'}
+                                                {user.name || 'Anonymous'} {isCurrentUser && '(Bạn)'}
                                             </div>
                                         </div>
                                     </div>
