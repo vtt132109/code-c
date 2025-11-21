@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+model User {
+  id          String       @id @default(cuid())
+  name        String?
+  email       String       @unique
+  image       String?
+  xp          Int          @default(0)
+  streak      Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  submissions Submission[]
+}
+
+model Module {
+  id      String   @id @default(cuid())
+  title   String
+  order   Int      @unique
+  lessons Lesson[]
+}
+
+model Lesson {
+  id       String    @id @default(cuid())
+  title    String
+  content  String // Markdown content
+  order    Int
+  moduleId String
+  module   Module    @relation(fields: [moduleId], references: [id])
+  problems Problem[]
+
+  @@unique([moduleId, order])
+}
+
+model Problem {
+  id           String       @id @default(cuid())
+  title        String
+  description  String // Markdown content
+  difficulty   String       @default("Easy") // Easy, Medium, Hard
+  starterCode  String
+  solutionCode String?
+  timeLimit    Int          @default(2) // Seconds
+  lessonId     String
+  lesson       Lesson       @relation(fields: [lessonId], references: [id])
+  testCases    TestCase[]
+  submissions  Submission[]
+}
+
+model TestCase {
+  id             String  @id @default(cuid())
+  stdin          String
+  expectedOutput String
+  isHidden       Boolean @default(false)
+  problemId      String
+  problem        Problem @relation(fields: [problemId], references: [id])
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  code      String
+  status    String // Passed, Failed, Error
+  output    String?
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  problemId String
+  problem   Problem  @relation(fields: [problemId], references: [id])
+}
