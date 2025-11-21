@@ -2,43 +2,42 @@
 
 import { prisma } from '@/lib/prisma'
 
-const JUDGE0_URL = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com'
-const JUDGE0_KEY = process.env.JUDGE0_API_KEY || ''
+const PISTON_URL = 'https://emkc.org/api/v2/piston/execute'
 
-async function runJudge0(source_code: string, stdin: string) {
-    if (!JUDGE0_KEY && process.env.NODE_ENV === 'development') {
-        console.warn('No Judge0 API Key provided. Returning mock response.')
-        return {
-            stdout: Buffer.from('Mock Output: ' + stdin).toString('base64'),
-            stderr: null,
-            compile_output: null,
-            time: '0.001',
-            status: { id: 3, description: 'Accepted' }
+async function runPiston(source_code: string, stdin: string) {
+    try {
+        const response = await fetch(PISTON_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                language: 'c',
+                version: '*',
+                files: [
+                    {
+                        name: 'main.c',
+                        content: source_code
+                    }
+                ],
+                stdin: stdin,
+                compile_timeout: 10000,
+                run_timeout: 3000,
+            }),
+        })
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            console.error('Piston API Error:', errorText)
+            throw new Error(`Lỗi Piston: ${response.status} - ${response.statusText}`)
         }
+
+        const result = await response.json()
+        return result
+    } catch (error) {
+        console.error('Piston execution error:', error)
+        throw error
     }
-
-    const response = await fetch(`${JUDGE0_URL}/submissions?base64_encoded=true&wait=true`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-RapidAPI-Key': JUDGE0_KEY,
-            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-        },
-        body: JSON.stringify({
-            source_code: Buffer.from(source_code).toString('base64'),
-            language_id: 50, // GCC
-            stdin: Buffer.from(stdin).toString('base64'),
-        }),
-    })
-
-    if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Judge0 API Error:', errorText)
-        throw new Error(`Lỗi Judge0: ${response.status} - ${response.statusText}`)
-    }
-
-    const result = await response.json()
-    return result
 }
 
 export async function runCode(code: string, problemId: string) {
@@ -58,29 +57,31 @@ export async function runCode(code: string, problemId: string) {
     // Run all test cases
     for (const testCase of problem.testCases) {
         try {
-            const result = await runJudge0(code, testCase.stdin)
+            const result = await runPiston(code, testCase.stdin)
 
-            const stdout = result.stdout ? Buffer.from(result.stdout, 'base64').toString('utf-8').trim() : ''
-            const stderr = result.stderr ? Buffer.from(result.stderr, 'base64').toString('utf-8') : ''
-            const compile_output = result.compile_output ? Buffer.from(result.compile_output, 'base64').toString('utf-8') : ''
+            // Piston API returns: { run: { stdout, stderr, code, output } }
+            const stdout = result.run?.stdout?.trim() || ''
+            const stderr = result.run?.stderr || ''
+            const exitCode = result.run?.code || 0
+            const compileOutput = result.compile?.stderr || ''
             const expectedOutput = testCase.expectedOutput.trim()
 
             // Check if compilation failed
-            if (compile_output) {
+            if (compileOutput) {
                 return {
-                    error: compile_output,
+                    error: compileOutput,
                     stderr: 'Lỗi biên dịch'
                 }
             }
 
-            // Check if there's a runtime error
-            if (stderr && result.status?.id !== 3) {
+            // Check if there's a runtime error (non-zero exit code)
+            if (exitCode !== 0 && stderr) {
                 testResults.push({
                     passed: false,
                     input: testCase.stdin,
                     expectedOutput: expectedOutput,
                     actualOutput: stderr || 'Runtime Error',
-                    executionTime: result.time ? Math.round(parseFloat(result.time) * 1000) : 0,
+                    executionTime: 0,
                     timeLimit: problem.timeLimit * 1000,
                     description: 'Runtime Error'
                 })
@@ -94,7 +95,7 @@ export async function runCode(code: string, problemId: string) {
                 input: testCase.stdin,
                 expectedOutput: expectedOutput,
                 actualOutput: stdout,
-                executionTime: result.time ? Math.round(parseFloat(result.time) * 1000) : 0,
+                executionTime: 0, // Piston doesn't provide execution time
                 timeLimit: problem.timeLimit * 1000,
                 description: passed ? 'Accepted' : 'Wrong answer'
             })
@@ -132,8 +133,8 @@ export async function submitCode(code: string, problemId: string, userId: string
 
     for (const tc of problem.testCases) {
         try {
-            const result = await runJudge0(code, tc.stdin)
-            const stdout = result.stdout ? Buffer.from(result.stdout, 'base64').toString('utf-8').trim() : ''
+            const result = await runPiston(code, tc.stdin)
+            const stdout = result.run?.stdout?.trim() || ''
 
             if (stdout !== tc.expectedOutput.trim()) {
                 allPassed = false
