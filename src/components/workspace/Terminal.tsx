@@ -36,10 +36,10 @@ export function Terminal({ output, error, status, testResults }: TerminalProps) 
                 <div className="flex-1 flex flex-col">
                     {/* Summary */}
                     <div className="px-4 py-2 border-b border-slate-700">
-                        <p className="text-sm text-red-400">
+                        <p className={`text-sm font-medium ${testResults.filter(r => !r.passed).length > 0 ? 'text-red-400' : 'text-green-400'}`}>
                             {testResults.filter(r => !r.passed).length > 0
                                 ? `${testResults.filter(r => !r.passed).length}/${testResults.length} test case sai`
-                                : `${testResults.filter(r => r.passed).length}/${testResults.length} test case đúng`}
+                                : `${testResults.filter(r => r.passed).length}/${testResults.length} test case đúng ✓`}
                         </p>
                     </div>
 

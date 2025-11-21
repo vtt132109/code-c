@@ -8,7 +8,20 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
 
     const problem = await prisma.problem.findUnique({
         where: { id: problemId },
-        include: { lesson: true }
+        include: {
+            lesson: {
+                include: {
+                    problems: {
+                        orderBy: { title: 'asc' },
+                        select: {
+                            id: true,
+                            title: true,
+                            difficultyLevel: true
+                        }
+                    }
+                }
+            }
+        }
     })
 
     if (!problem) {
@@ -23,6 +36,20 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
         })
     }
 
+    // Get user's solved problems
+    const solvedProblems = await prisma.submission.findMany({
+        where: {
+            userId: user.id,
+            status: 'Passed'
+        },
+        select: {
+            problemId: true
+        },
+        distinct: ['problemId']
+    })
+
+    const solvedProblemIds = new Set(solvedProblems.map(s => s.problemId))
+
     // Parse hints from JSON string if exists
     let hints: string[] = []
     if (problem.hints) {
@@ -33,5 +60,13 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
         }
     }
 
-    return <WorkspaceClient problem={problem} lesson={problem.lesson} userId={user.id} hints={hints} difficulty={problem.difficultyLevel} />
+    return <WorkspaceClient
+        problem={problem}
+        lesson={problem.lesson}
+        userId={user.id}
+        hints={hints}
+        difficulty={problem.difficultyLevel}
+        allProblems={problem.lesson.problems}
+        solvedProblemIds={Array.from(solvedProblemIds)}
+    />
 }

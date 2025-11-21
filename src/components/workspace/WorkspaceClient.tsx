@@ -17,6 +17,8 @@ interface WorkspaceClientProps {
     userId: string
     hints?: string[]
     difficulty?: number
+    allProblems?: Array<{ id: string; title: string; difficultyLevel: number }>
+    solvedProblemIds?: string[]
 }
 
 interface TestResult {
@@ -29,7 +31,7 @@ interface TestResult {
     description?: string
 }
 
-export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1 }: WorkspaceClientProps) {
+export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1, allProblems = [], solvedProblemIds = [] }: WorkspaceClientProps) {
     const [testResults, setTestResults] = useState<TestResult[]>([]);
     const [allTestsPassed, setAllTestsPassed] = useState(false);
     const [code, setCode] = useState(problem?.starterCode || `#include <stdio.h>\n\nint main() {\n    // Viết code ở đây\n    return 0;\n}\n`)
@@ -119,7 +121,12 @@ export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Navigation */}
-                <ProblemNavigator title={problem.title} />
+                <ProblemNavigator
+                    title={problem.title}
+                    allProblems={allProblems}
+                    currentProblemId={problem.id}
+                    solvedProblemIds={solvedProblemIds}
+                />
 
                 {/* Resizable Workspace */}
                 <div className="flex-1 overflow-hidden">
