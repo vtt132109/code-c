@@ -17,9 +17,10 @@ interface ProblemViewProps {
     lessonContent?: string
     hints?: string[]
     difficulty?: number
+    solution?: string | null
 }
 
-export function ProblemView({ content, title, lessonContent, hints, difficulty = 1 }: ProblemViewProps) {
+export function ProblemView({ content, title, lessonContent, hints, difficulty = 1, solution }: ProblemViewProps) {
     const showHints = difficulty >= 5 && hints && hints.length > 0
 
     return (
@@ -57,22 +58,28 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                 <TabsList className="w-full justify-start rounded-none border-b bg-slate-50 p-0 h-auto">
                     <TabsTrigger
                         value="problem"
-                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3 text-slate-600 data-[state=active]:text-blue-600"
                     >
                         Đề bài
                     </TabsTrigger>
                     {lessonContent && (
                         <TabsTrigger
                             value="lesson"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3 text-slate-600 data-[state=active]:text-blue-600"
                         >
                             Lý thuyết
                         </TabsTrigger>
                     )}
+                    <TabsTrigger
+                        value="starter-code"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3 text-slate-600 data-[state=active]:text-blue-600"
+                    >
+                        Code Mẫu
+                    </TabsTrigger>
                     {showHints && (
                         <TabsTrigger
                             value="hints"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3 text-slate-600 data-[state=active]:text-blue-600"
                         >
                             <Lightbulb className="w-4 h-4 mr-2" />
                             Gợi ý
@@ -80,7 +87,7 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                     )}
                 </TabsList>
 
-                <TabsContent value="problem" className="flex-1 m-0">
+                <TabsContent value="problem" className="flex-1 m-0 bg-white">
                     <ScrollArea className="h-full">
                         <div className="p-6 max-w-3xl mx-auto">
                             <h1 className="text-2xl font-bold text-slate-900 mb-4">Bài tập</h1>
@@ -94,10 +101,10 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                 </TabsContent>
 
                 {lessonContent && (
-                    <TabsContent value="lesson" className="flex-1 m-0">
+                    <TabsContent value="lesson" className="flex-1 m-0 bg-white">
                         <ScrollArea className="h-full">
                             <div className="p-6 max-w-3xl mx-auto">
-                                <h2 className="text-2xl font-bold text-slate-900 mb-4">Lý thuyết & Code mẫu</h2>
+                                <h2 className="text-2xl font-bold text-slate-900 mb-4">Lý thuyết</h2>
                                 <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-blue-600 prose-code:text-pink-600 prose-code:bg-pink-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-pre:bg-slate-900 prose-pre:text-slate-100">
                                     <ReactMarkdown rehypePlugins={[rehypeHighlight, rehypeKatex]}>
                                         {lessonContent}
@@ -108,8 +115,25 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                     </TabsContent>
                 )}
 
+                <TabsContent value="starter-code" className="flex-1 m-0 bg-white">
+                    <ScrollArea className="h-full">
+                        <div className="p-6 max-w-3xl mx-auto">
+                            <h2 className="text-2xl font-bold text-slate-900 mb-4">Code Mẫu (Tham khảo)</h2>
+                            <div className="prose prose-slate max-w-none">
+                                <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto">
+                                    <code>{solution || `// Chưa có lời giải mẫu cho bài tập này.
+// Bạn hãy thử tự giải nhé!`}</code>
+                                </pre>
+                                <p className="text-slate-500 mt-4 italic">
+                                    * Bạn có thể copy code này để chạy thử và tham khảo cách giải.
+                                </p>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                </TabsContent>
+
                 {showHints && (
-                    <TabsContent value="hints" className="flex-1 m-0">
+                    <TabsContent value="hints" className="flex-1 m-0 bg-white">
                         <ScrollArea className="h-full">
                             <div className="p-6 max-w-3xl mx-auto">
                                 <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-6">

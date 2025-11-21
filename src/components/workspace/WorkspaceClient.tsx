@@ -132,6 +132,7 @@ export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1
                                 lessonContent={lesson?.content}
                                 hints={hints}
                                 difficulty={difficulty}
+                                solution={problem.solution}
                             />
                         </ResizablePanel>
 

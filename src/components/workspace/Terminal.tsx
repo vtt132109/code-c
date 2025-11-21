@@ -44,14 +44,14 @@ export function Terminal({ output, error, status, testResults }: TerminalProps) 
                     </div>
 
                     {/* Test Cases */}
-                    <ScrollArea className="flex-1">
+                    <div className="flex-1 overflow-y-auto">
                         <div className="p-2">
                             {testResults.map((result, idx) => (
                                 <div key={idx} className="mb-2">
                                     <button
                                         className={`w-full text-left p-3 rounded-lg border transition-colors ${result.passed
-                                                ? 'bg-green-900/20 border-green-700/50 hover:bg-green-900/30'
-                                                : 'bg-red-900/20 border-red-700/50 hover:bg-red-900/30'
+                                            ? 'bg-green-900/20 border-green-700/50 hover:bg-green-900/30'
+                                            : 'bg-red-900/20 border-red-700/50 hover:bg-red-900/30'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2 mb-2">
@@ -102,7 +102,7 @@ export function Terminal({ output, error, status, testResults }: TerminalProps) 
                                 </div>
                             ))}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </div>
             ) : (
                 /* Default Output View */
