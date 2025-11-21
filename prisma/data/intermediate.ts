@@ -7,6 +7,28 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    long long f0 = 0, f1 = 1;
+    if (n == 0) {
+        printf("0");
+        return 0;
+    }
+    if (n == 1) {
+        printf("1");
+        return 0;
+    }
+    for (int i = 2; i <= n; i++) {
+        long long fn = f0 + f1;
+        f0 = f1;
+        f1 = fn;
+    }
+    printf("%lld", f1);
+    return 0;
+}`,
         hints: [
             'F(0) = 0, F(1) = 1',
             'F(n) = F(n-1) + F(n-2)',
@@ -25,6 +47,22 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 4,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    long long sum = 0;
+    for(int i = 0; i < n; i++) {
+        sum += arr[i];
+    }
+    printf("%lld", sum);
+    return 0;
+}`,
         testCases: [
             { stdin: '3\n1 2 3', expectedOutput: '6' },
             { stdin: '5\n10 20 30 40 50', expectedOutput: '150' },
@@ -36,6 +74,24 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 4,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    int max = arr[0];
+    for(int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    printf("%d", max);
+    return 0;
+}`,
         testCases: [
             { stdin: '3\n5 10 3', expectedOutput: '10' },
             { stdin: '4\n-5 -10 -1 -20', expectedOutput: '-1' },
@@ -47,6 +103,21 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    for(int i = n - 1; i >= 0; i--) {
+        printf("%d", arr[i]);
+        if (i > 0) printf(" ");
+    }
+    return 0;
+}`,
         hints: ['Duyệt mảng từ cuối lên đầu', 'In từ arr[n-1] đến arr[0]'],
         testCases: [
             { stdin: '3\n1 2 3', expectedOutput: '3 2 1' },
@@ -59,6 +130,24 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Easy',
         difficultyLevel: 3,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    int count = 0;
+    for(int i = 0; i < n; i++) {
+        if (arr[i] % 2 == 0) {
+            count++;
+        }
+    }
+    printf("%d", count);
+    return 0;
+}`,
         testCases: [
             { stdin: '5\n1 2 3 4 5', expectedOutput: '2' },
             { stdin: '4\n2 4 6 8', expectedOutput: '4' },
@@ -70,6 +159,18 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 4,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int sum = 0;
+    for(int i = 1; i <= n; i += 2) {
+        sum += i;
+    }
+    printf("%d", sum);
+    return 0;
+}`,
         testCases: [
             { stdin: '5', expectedOutput: '9' },
             { stdin: '10', expectedOutput: '25' },
@@ -81,6 +182,19 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf("%d %d", &a, &b);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int a, b;
+    scanf("%d %d", &a, &b);
+    while(b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    printf("%d", a);
+    return 0;
+}`,
         hints: [
             'Dùng thuật toán Euclid',
             'GCD(a, b) = GCD(b, a % b)',
@@ -98,6 +212,21 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf("%d %d", &a, &b);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int a, b;
+    scanf("%d %d", &a, &b);
+    int temp_a = a, temp_b = b;
+    while(temp_b != 0) {
+        int temp = temp_b;
+        temp_b = temp_a % temp_b;
+        temp_a = temp;
+    }
+    int gcd = temp_a;
+    printf("%d", (a * b) / gcd);
+    return 0;
+}`,
         hints: ['Tính GCD trước', 'LCM = (a * b) / GCD'],
         testCases: [
             { stdin: '4 6', expectedOutput: '12' },
@@ -110,6 +239,24 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 6,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int sum = 0;
+    for(int i = 1; i <= n / 2; i++) {
+        if (n % i == 0) {
+            sum += i;
+        }
+    }
+    if (sum == n && n > 0) {
+        printf("YES");
+    } else {
+        printf("NO");
+    }
+    return 0;
+}`,
         hints: [
             'Tìm tất cả ước của n (từ 1 đến n/2)',
             'Cộng tất cả ước lại',
@@ -127,6 +274,29 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    int isPalindrome = 1;
+    for(int i = 0; i < n / 2; i++) {
+        if (arr[i] != arr[n - 1 - i]) {
+            isPalindrome = 0;
+            break;
+        }
+    }
+    if (isPalindrome) {
+        printf("YES");
+    } else {
+        printf("NO");
+    }
+    return 0;
+}`,
         hints: ['So sánh arr[i] với arr[n-1-i]', 'Duyệt đến giữa mảng'],
         testCases: [
             { stdin: '5\n1 2 3 2 1', expectedOutput: 'YES' },
@@ -140,6 +310,31 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 6,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    // Bubble sort
+    for(int i = 0; i < n - 1; i++) {
+        for(int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    for(int i = 0; i < n; i++) {
+        printf("%d", arr[i]);
+        if (i < n - 1) printf(" ");
+    }
+    return 0;
+}`,
         hints: [
             'Dùng thuật toán Bubble Sort hoặc Selection Sort',
             'So sánh và hoán đổi các phần tử',
@@ -156,6 +351,24 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 4,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n, x;\n    scanf("%d %d", &n, &x);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n, x;
+    scanf("%d %d", &n, &x);
+    int arr[n];
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    for(int i = 0; i < n; i++) {
+        if (arr[i] == x) {
+            printf("%d", i);
+            return 0;
+        }
+    }
+    printf("-1");
+    return 0;
+}`,
         testCases: [
             { stdin: '5 3\n1 2 3 4 5', expectedOutput: '2' },
             { stdin: '4 10\n1 2 3 4', expectedOutput: '-1' },
@@ -167,6 +380,33 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 6,
         starterCode: `#include <stdio.h>\n#include <math.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int original = n;
+    int digits = 0;
+    int temp = n;
+    while(temp > 0) {
+        digits++;
+        temp /= 10;
+    }
+    int sum = 0;
+    temp = n;
+    while(temp > 0) {
+        int digit = temp % 10;
+        sum += pow(digit, digits);
+        temp /= 10;
+    }
+    if (sum == original) {
+        printf("YES");
+    } else {
+        printf("NO");
+    }
+    return 0;
+}`,
         hints: [
             'Tách các chữ số bằng % 10',
             'Đếm số chữ số trước',
@@ -183,7 +423,27 @@ export const intermediateProblems: ProblemData[] = [
         description: 'Tính ma trận chuyển vị của ma trận m×n.\n\n**Input:**\n- Dòng 1: m n\n- m dòng tiếp: mỗi dòng n số\n\n**Output:** Ma trận chuyển vị (n×m)',
         difficulty: 'Hard',
         difficultyLevel: 7,
-        starterCode: `#include <stdio.h>\n\nint main() {\n    int m, n;\n    scanf("%d %d", &m, &n);\n    int matrix[m][n];\n    for(int i = 0; i < m; i++) {\n        for(int j = 0; j < n; j++) {\n            scanf("%d", &matrix[i][j]);\n        }\n    }\n    // Code của bạn\n    return 0;\n}`,
+        starterCode: `#include <stdio.h>\n\nint main() {\n    int m, n;\n    scanf("%d %d", &m, &n);\n    int matrix[m][n];\n    for(int i = 0; i < m; i++) {\n        for(int j = 0; j < n; j++) {\n            scanf("%d", &matrix[i][j]);\n        }\ n    }\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n);
+    int matrix[m][n];
+    for(int i = 0; i < m; i++) {
+        for(int j = 0; j < n; j++) {
+            scanf("%d", &matrix[i][j]);
+        }
+    }
+    for(int j = 0; j < n; j++) {
+        for(int i = 0; i < m; i++) {
+            printf("%d", matrix[i][j]);
+            if (i < m - 1) printf(" ");
+        }
+        printf("\\n");
+    }
+    return 0;
+}`,
         hints: [
             'Ma trận chuyển vị: hoán đổi hàng và cột',
             'A[i][j] -> A_transpose[j][i]',
@@ -199,6 +459,24 @@ export const intermediateProblems: ProblemData[] = [
         difficulty: 'Medium',
         difficultyLevel: 5,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
+        solution: `#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int original = n;
+    int reversed = 0;
+    while(n > 0) {
+        reversed = reversed * 10 + (n % 10);
+        n /= 10;
+    }
+    if (reversed == original) {
+        printf("YES");
+    } else {
+        printf("NO");
+    }
+    return 0;
+}`,
         hints: [
             'Đảo ngược số rồi so sánh với số gốc',
             'Dùng % 10 để lấy chữ số cuối',

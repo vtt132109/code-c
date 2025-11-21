@@ -465,12 +465,11 @@ int main() {
         hints: ['hanoi(n) = 2 * hanoi(n-1) + 1', 'hanoi(1) = 1', 'Hoặc dùng công thức 2^n - 1'],
         starterCode: '#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Tính và in số bước\n    return 0;\n}',
         solution: `#include <stdio.h>
-#include <math.h>
 
 int main() {
     int n;
     scanf("%d", &n);
-    long long steps = pow(2, n) - 1;
+    long long steps = (1LL << n) - 1;
     printf("%lld", steps);
     return 0;
 }`,
