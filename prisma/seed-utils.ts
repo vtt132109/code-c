@@ -7,6 +7,7 @@ export type ProblemData = {
     description: string
     difficulty: 'Easy' | 'Medium' | 'Hard'
     difficultyLevel: number
+    theory?: string
     hints?: string[]
     starterCode: string
     solution?: string
@@ -27,6 +28,7 @@ export async function createProblem(
             description: data.description,
             difficulty: data.difficulty,
             difficultyLevel: data.difficultyLevel,
+            theory: data.theory,
             hints: data.hints ? JSON.stringify(data.hints) : undefined,
             starterCode: data.starterCode,
             solution: data.solution,

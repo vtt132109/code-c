@@ -449,6 +449,47 @@ int main() {
         description: 'Cho mảng đã được sắp xếp tăng dần gồm n phần tử. Tìm vị trí của phần tử x bằng thuật toán Binary Search. In ra vị trí (index), nếu không tìm thấy in -1.',
         difficulty: 'Medium',
         difficultyLevel: 5,
+        theory: `### Thuật toán Tìm kiếm nhị phân (Binary Search)
+
+**Yêu cầu:** Mảng phải đã được **sắp xếp**.
+
+**Ý tưởng:**
+Chia đôi khoảng tìm kiếm sau mỗi bước.
+
+**Thuật toán:**
+1. Đặt \`left = 0\`, \`right = n-1\`
+2. Tính \`mid = (left + right) / 2\`
+3. So sánh \`arr[mid]\` với \`x\`:
+   - Nếu \`arr[mid] == x\`: Tìm thấy! Trả về \`mid\`
+   - Nếu \`arr[mid] < x\`: Tìm ở nửa phải \u2192 \`left = mid + 1\`
+   - Nếu \`arr[mid] > x\`: Tìm ở nửa trái \u2192 \`right = mid - 1\`
+4. Lặp lại cho đến khi \`left > right\`
+
+**Ví dụ:** Tìm 5 trong [1, 2, 4, 5, 8, 10]
+- **Bước 1:** left=0, right=5, mid=2 → arr[2]=4 < 5 → left=3
+- **Bước 2:** left=3, right=5, mid=4 → arr[4]=8 > 5 → right=3
+- **Bước 3:** left=3, right=3, mid=3 → arr[3]=5 == 5 → **Tìm thấy!**
+
+**Code mẫu:**
+\`\`\`c
+int left = 0, right = n - 1;
+while(left <= right) {
+    int mid = (left + right) / 2;
+    if(arr[mid] == x) return mid;
+    else if(arr[mid] < x) left = mid + 1;
+    else right = mid - 1;
+}
+return -1; // Không tìm thấy
+\`\`\`
+
+**Độ phức tạp:**
+- **O(log n)** - Giảm nửa sau mỗi bước
+- Nhanh hơn nhiều so với tìm tuần tự O(n)
+
+**So sánh:**
+- Mảng 1,000,000 phần tử:
+  - Tìm tuần tự: tối đa 1,000,000 bước
+  - Binary Search: tối đa **20 bước**!`,
         hints: ['Dùng 2 con trỏ left và right', 'mid = (left + right) / 2', 'So sánh arr[mid] với x'],
         starterCode: '#include <stdio.h>\n\nint main() {\n    int n, x;\n    scanf("%d %d", &n, &x);\n    int arr[n];\n    // Code của bạn\n    return 0;\n}',
         solution: `#include <stdio.h>

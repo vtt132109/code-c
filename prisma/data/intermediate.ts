@@ -6,6 +6,19 @@ export const intermediateProblems: ProblemData[] = [
         description: 'In ra số Fibonacci thứ n.\n\nDãy Fibonacci: 0, 1, 1, 2, 3, 5, 8, 13, ...',
         difficulty: 'Medium',
         difficultyLevel: 5,
+        theory: `### Dãy Fibonacci
+        
+Dãy Fibonacci là dãy số bắt đầu bằng 0 và 1, các số sau bằng tổng 2 số liền trước.
+
+**Công thức:**
+- F(0) = 0
+- F(1) = 1
+- F(n) = F(n-1) + F(n-2) với n > 1
+
+**Ví dụ:**
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ...
+
+Để tính số Fibonacci thứ n, ta có thể dùng vòng lặp hoặc đệ quy. Với n lớn, vòng lặp sẽ hiệu quả hơn.`,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 
@@ -46,6 +59,27 @@ int main() {
         description: 'Cho n số nguyên. Tính tổng các số.\n\n**Input:**\n- Dòng 1: n (số lượng)\n- Dòng 2: n số nguyên\n\n**Output:** Tổng',
         difficulty: 'Medium',
         difficultyLevel: 4,
+        theory: `### Tính tổng mảng
+
+Để tính tổng các phần tử trong mảng, ta cần:
+
+**Bước 1: Khởi tạo biến tổng**
+- Sử dụng kiểu \`long long\` để tránh tràn số khi tổng lớn
+- Khởi tạo \`sum = 0\`
+
+**Bước 2: Duyệt qua từng phần tử**
+\`\`\`c
+for(int i = 0; i < n; i++) {
+    sum += arr[i];
+}
+\`\`\`
+
+**Lưu ý quan trọng:**
+- Nếu dùng \`int\`: giới hạn khoảng ±2 tỷ
+- Nếu dùng \`long long\`: giới hạn khoảng ±9 × 10¹⁸
+- Nếu tổng có thể vượt quá giới hạn của \`int\`, **bắt buộc** dùng \`long long\`
+
+**Độ phức tạp:** O(n) - duyệt qua n phần tử một lần`,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 
@@ -102,6 +136,36 @@ int main() {
         description: 'In mảng theo thứ tự ngược lại.\n\n**Input:**\n- Dòng 1: n\n- Dòng 2: n số\n\n**Output:** n số theo thứ tự ngược, cách nhau bởi dấu cách',
         difficulty: 'Medium',
         difficultyLevel: 5,
+        theory: `### Đảo ngược mảng
+
+Có 2 phương pháp chính:
+
+**Phương pháp 1: In ngược (Không thay đổi mảng)**
+\`\`\`c
+for(int i = n - 1; i >= 0; i--) {
+    printf("%d ", arr[i]);
+}
+\`\`\`
+- Đơn giản, nhanh
+- Phù hợp nếu chỉ cần in kết quả
+
+**Phương pháp 2: Hoán đổi tại chỗ (Swap)**
+\`\`\`c
+for(int i = 0; i < n/2; i++) {
+    int temp = arr[i];
+    arr[i] = arr[n - 1 - i];
+    arr[n - 1 - i] = temp;
+}
+\`\`\`
+- Thay đổi mảng gốc
+- Chỉ cần duyệt nửa mảng (n/2 lần)
+- Sử dụng biến \`temp\` để hoán đổi
+
+**Kỹ thuật Two Pointers:**
+- Con trỏ trái: \`i = 0\`
+- Con trỏ phải: \`j = n-1\`
+- Hoán đổi \`arr[i]\` với \`arr[j]\`, sau đó \`i++\`, \`j--\`
+- Dừng khi \`i >= j\``,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 
@@ -181,6 +245,35 @@ int main() {
         description: 'Tìm ước số chung lớn nhất (GCD) của 2 số a và b.',
         difficulty: 'Medium',
         difficultyLevel: 5,
+        theory: `### Thuật toán Euclid (ƯCLN)
+
+**Ý tưởng:**
+ƯCLN(a, b) = ƯCLN(b, a mod b)
+
+**Ví dụ:** ƯCLN(12, 8)
+- ƯCLN(12, 8) = ƯCLN(8, 4)   // 12 % 8 = 4
+- ƯCLN(8, 4) = ƯCLN(4, 0)    // 8 % 4 = 0
+- ƯCLN(4, 0) = **4**         // b = 0, trả về a
+
+**Code mẫu:**
+\`\`\`c
+while(b != 0) {
+    int temp = b;
+    b = a % b;
+    a = temp;
+}
+printf("%d", a); // a chính là ƯCLN
+\`\`\`
+
+**Tại sao hiệu quả?**
+- Mỗi bước giảm ít nhất một nửa giá trị
+- Độ phức tạp: O(log(min(a,b)))
+- Nhanh hơn nhiều so với duyệt từ 1 đến min(a,b)
+
+**Tính chất:**
+- ƯCLN(a, 0) = a
+- ƯCLN(a, b) = ƯCLN(b, a)
+- ƯCLN luôn > 0 với a, b > 0`,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf("%d %d", &a, &b);\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 
@@ -211,6 +304,37 @@ int main() {
         description: 'Tìm bội số chung nhỏ nhất (LCM) của 2 số a và b.\n\nCông thức: LCM(a, b) = (a × b) / GCD(a, b)',
         difficulty: 'Medium',
         difficultyLevel: 5,
+        theory: `### Bội số chung nhỏ nhất (BCNN)
+
+**Công thức quan trọng:**
+BCNN(a, b) = (a × b) / ƯCLN(a, b)
+
+**Ví dụ:** BCNN(4, 6)
+- Bước 1: Tìm ƯCLN(4, 6) = **2**
+- Bước 2: BCNN = (4 × 6) / 2 = **12**
+
+**Giải thích:**
+- Bội chung nhỏ nhất là số nhỏ nhất chia hết cho cả a và b
+- VD: BC(4, 6) = {12, 24, 36, ...} → BCN = 12
+
+**Tại sao công thức đúng?**
+- a × b chứa tất cả thừa số của cả a và b
+- Nhưng các thừa số chung bị đếm 2 lần
+- Chia cho ƯCLN để loại bỏ phần thừa
+
+**Lưu ý khi code:**
+\`\`\`c
+// Sai: có thể tràn số
+int lcm = (a * b) / gcd;
+
+// Đúng: chia trước để tránh tràn
+int lcm = a / gcd * b;
+\`\`\`
+
+**Tính chất:**
+- BCNN(a, b) ≥ max(a, b)
+- BCNN(a, 1) = a
+- ƯCLN(a, b) × BCNN(a, b) = a × b`,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf("%d %d", &a, &b);\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 
@@ -309,6 +433,44 @@ int main() {
         description: 'Sắp xếp mảng theo thứ tự tăng dần.\n\n**Input:**\n- Dòng 1: n\n- Dòng 2: n số\n\n**Output:** Mảng đã sắp xếp, các số cách nhau bởi dấu cách',
         difficulty: 'Medium',
         difficultyLevel: 6,
+        theory: `### Thuật toán sắp xếp nổi bọt (Bubble Sort)
+
+**Ý tưởng:**
+Đẩy phần tử lớn nhất về cuối mảng sau mỗi vòng lặp.
+
+**Minh họa:** [5, 2, 8, 1]
+- **Vòng 1:** [2, 5, 1, **8**] - 8 "nổi" lên cuối
+- **Vòng 2:** [2, 1, **5**, 8] - 5 "nổi" lên
+- **Vòng 3:** [1, **2**, 5, 8] - 2 "nổi" lên
+- Kết quả: [1, 2, 5, 8]
+
+**Code:**
+\`\`\`c
+for(int i = 0; i < n-1; i++) {
+    for(int j = 0; j < n-i-1; j++) {
+        if(arr[j] > arr[j+1]) {
+            // Hoán đổi arr[j] và arr[j+1]
+            int temp = arr[j];
+            arr[j] = arr[j+1];
+            arr[j+1] = temp;
+        }
+    }
+}
+\`\`\`
+
+**Giải thích:**
+- Vòng ngoài (\`i\`): số lần lặp = n-1
+- Vòng trong (\`j\`): so sánh các cặp kề nhau
+- \`n-i-1\`: vì i phần tử cuối đã đúng vị trí
+
+**Độ phức tạp:**
+- Tốt nhất: O(n) - mảng đã sắp xếp
+- Trung bình & Tệ nhất: O(n²)
+
+**Thuật toán khác (nâng cao):**
+- **Selection Sort:** Chọn phần tử nhỏ nhất đưa lên đầu - O(n²)
+- **Quick Sort:** Chia để trị - O(n log n)
+- **Merge Sort:** Trộn dãy con - O(n log n)`,
         starterCode: `#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for(int i = 0; i < n; i++) {\n        scanf("%d", &arr[i]);\n    }\n    // Code của bạn\n    return 0;\n}`,
         solution: `#include <stdio.h>
 

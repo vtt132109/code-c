@@ -1,10 +1,25 @@
 import { prisma } from '@/lib/prisma'
 import { WorkspaceClient } from '@/components/workspace/WorkspaceClient'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
 export const revalidate = 0
 
 export default async function WorkspacePage({ params }: { params: Promise<{ moduleId: string, problemId: string }> }) {
     const { moduleId, problemId } = await params
+
+    const session = await auth()
+    if (!session || !session.user || !session.user.email) {
+        redirect('/login')
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+    })
+
+    if (!user) {
+        redirect('/login')
+    }
 
     const problem = await prisma.problem.findUnique({
         where: { id: problemId },
@@ -12,11 +27,12 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
             lesson: {
                 include: {
                     problems: {
-                        orderBy: { title: 'asc' },
+                        orderBy: { difficultyLevel: 'asc' },
                         select: {
                             id: true,
                             title: true,
-                            difficultyLevel: true
+                            difficultyLevel: true,
+                            lessonId: true
                         }
                     }
                 }
@@ -26,14 +42,6 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
 
     if (!problem) {
         return <div className="p-8 text-zinc-100">Problem not found</div>
-    }
-
-    // Mock user for now - in real app use auth()
-    let user = await prisma.user.findFirst()
-    if (!user) {
-        user = await prisma.user.create({
-            data: { email: 'demo@example.com', name: 'Demo User' }
-        })
     }
 
     // Get user's solved problems
@@ -63,6 +71,7 @@ export default async function WorkspacePage({ params }: { params: Promise<{ modu
     return <WorkspaceClient
         problem={problem}
         lesson={problem.lesson}
+        theory={problem.theory}
         userId={user.id}
         hints={hints}
         difficulty={problem.difficultyLevel}

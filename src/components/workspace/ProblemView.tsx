@@ -15,12 +15,13 @@ interface ProblemViewProps {
     content: string
     title: string
     lessonContent?: string
+    theory?: string | null
     hints?: string[]
     difficulty?: number
     solution?: string | null
 }
 
-export function ProblemView({ content, title, lessonContent, hints, difficulty = 1, solution }: ProblemViewProps) {
+export function ProblemView({ content, title, lessonContent, theory, hints, difficulty = 1, solution }: ProblemViewProps) {
     const showHints = difficulty >= 5 && hints && hints.length > 0
 
     return (
@@ -62,7 +63,7 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                     >
                         Đề bài
                     </TabsTrigger>
-                    {lessonContent && (
+                    {theory && (
                         <TabsTrigger
                             value="lesson"
                             className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-white px-6 py-3 text-slate-600 data-[state=active]:text-blue-600"
@@ -100,14 +101,14 @@ export function ProblemView({ content, title, lessonContent, hints, difficulty =
                     </ScrollArea>
                 </TabsContent>
 
-                {lessonContent && (
+                {theory && (
                     <TabsContent value="lesson" className="flex-1 m-0 bg-white">
                         <ScrollArea className="h-full">
                             <div className="p-6 max-w-3xl mx-auto">
                                 <h2 className="text-2xl font-bold text-slate-900 mb-4">Lý thuyết</h2>
                                 <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-blue-600 prose-code:text-pink-600 prose-code:bg-pink-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-pre:bg-slate-900 prose-pre:text-slate-100">
                                     <ReactMarkdown rehypePlugins={[rehypeHighlight, rehypeKatex]}>
-                                        {lessonContent}
+                                        {theory}
                                     </ReactMarkdown>
                                 </div>
                             </div>

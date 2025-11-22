@@ -14,10 +14,11 @@ import { toast } from 'sonner'
 interface WorkspaceClientProps {
     problem: any
     lesson: any
+    theory?: string | null
     userId: string
     hints?: string[]
     difficulty?: number
-    allProblems?: Array<{ id: string; title: string; difficultyLevel: number }>
+    allProblems?: Array<{ id: string; title: string; difficultyLevel: number; lessonId?: string }>
     solvedProblemIds?: string[]
 }
 
@@ -31,7 +32,7 @@ interface TestResult {
     description?: string
 }
 
-export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1, allProblems = [], solvedProblemIds = [] }: WorkspaceClientProps) {
+export function WorkspaceClient({ problem, lesson, theory, userId, hints, difficulty = 1, allProblems = [], solvedProblemIds = [] }: WorkspaceClientProps) {
     const [testResults, setTestResults] = useState<TestResult[]>([]);
     const [allTestsPassed, setAllTestsPassed] = useState(false);
     const [code, setCode] = useState(problem?.starterCode || `#include <stdio.h>\n\nint main() {\n    // Viết code ở đây\n    return 0;\n}\n`)
@@ -137,6 +138,7 @@ export function WorkspaceClient({ problem, lesson, userId, hints, difficulty = 1
                                 content={problem.description}
                                 title={problem.title}
                                 lessonContent={lesson?.content}
+                                theory={theory}
                                 hints={hints}
                                 difficulty={difficulty}
                                 solution={problem.solution}

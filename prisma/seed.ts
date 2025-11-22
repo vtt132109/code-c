@@ -21,6 +21,17 @@ async function main() {
     await prisma.module.deleteMany()
     await prisma.user.deleteMany()
 
+    // Create default user
+    const hashedPassword = await require('bcryptjs').hash('password', 10)
+    await prisma.user.create({
+        data: {
+            email: 'test@example.com',
+            password: hashedPassword,
+            name: 'Test User'
+        }
+    })
+    console.log('Created default user: test@example.com / password')
+
 
     // === MODULE 1: CƠ BẢN ===
     const module1 = await prisma.module.create({

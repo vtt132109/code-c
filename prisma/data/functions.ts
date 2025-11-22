@@ -109,6 +109,53 @@ int main() {
         description: 'Viết hàm đệ quy `long long fib(int n)` tính số Fibonacci thứ n (F(0)=0, F(1)=1). Nhập n và in kết quả.',
         difficulty: 'Medium',
         difficultyLevel: 4,
+        theory: `### Fibonacci đệ quy
+
+**Công thức đệ quy:**
+- F(0) = 0
+- F(1) = 1
+- F(n) = F(n-1) + F(n-2)
+
+**Code:**
+\`\`\`c
+long long fib(int n) {
+    if(n == 0) return 0;
+    if(n == 1) return 1;
+    return fib(n-1) + fib(n-2);
+}
+\`\`\`
+
+**Cây đệ quy:** F(4)
+\`\`\`
+          F(4)
+        /      \\
+      F(3)      F(2)
+     /   \\      /  \\
+   F(2)  F(1)  F(1) F(0)
+   / \\
+ F(1) F(0)
+\`\`\`
+
+**Vấn đề:**
+- Độ phức tạp: **O(2ⁿ)** - rất chậm!
+- Tính lại nhiều lần (VD: F(2) được tính 2 lần trong F(4))
+
+**Giải pháp tốt hơn:**
+1. **Vòng lặp** (Iterative) - O(n):
+\`\`\`c
+long long f0 = 0, f1 = 1;
+for(int i = 2; i <= n; i++) {
+    long long fn = f0 + f1;
+    f0 = f1;
+    f1 = fn;
+}
+\`\`\`
+
+2. **Quy hoạch động** (Memoization) - O(n):
+Lưu kết quả đã tính để không phải tính lại
+
+**Kết luận:**
+Đệ quy đơn giản nhưng **không hiệu quả** cho Fibonacci!`,
         hints: ['fib(n) = fib(n-1) + fib(n-2)', 'Điều kiện dừng: fib(0)=0, fib(1)=1'],
         starterCode: '#include <stdio.h>\n\n// Định nghĩa hàm đệ quy ở đây\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Code của bạn\n    return 0;\n}',
         solution: `#include <stdio.h>
@@ -462,6 +509,56 @@ int main() {
         description: 'Viết hàm đệ quy giải bài toán Tháp Hà Nội với n đĩa. In ra số bước di chuyển tối thiểu (2^n - 1).',
         difficulty: 'Hard',
         difficultyLevel: 6,
+        theory: `### Bài toán Tháp Hà Nội
+
+**Bài toán:**
+Chúng ta có 3 cột (A, B, C) và n đĩa kích thước khác nhau.
+Bắt đầu tất cả đĩa ở cột A. Cần chuyển sang cột C.
+
+**Quy tắc:**
+1. Mỗi lần chỉ chuyển 1 đĩa
+2. Đĩa lớn không được nằm trên đĩa nhỏ
+
+**Thuật toán đệ quy:**
+Để chuyển n đĩa từ A → C (qua B):
+1. Chuyển (n-1) đĩa từ A → B (qua C)
+2. Chuyển đĩa lớn nhất từ A → C
+3. Chuyển (n-1) đĩa từ B → C (qua A)
+
+**Ví dụ:** n = 3
+\`\`\`
+A: [3, 2, 1]  B: []  C: []
+
+Bước 1: Chuyển 2 đĩa A→B
+  1.1: A→C: [3,2] [] [1]
+  1.2: A→B: [3] [2] [1]
+  1.3: C→B: [3] [2,1] []
+
+Bước 2: A→C: [] [2,1] [3]
+
+Bước 3: Chuyển 2 đĩa B→C
+  3.1: B→A: [1] [2] [3]
+  3.2: B→C: [1] [] [3,2]
+  3.3: A→C: [] [] [3,2,1] ✅
+\`\`\`
+Tổng: **7 bước**
+
+**Công thức:**
+- Số bước tối thiểu = **2ⁿ - 1**
+- n=1: 1 bước
+- n=2: 3 bước
+- n=3: 7 bước
+- n=10: 1,023 bước
+
+**Code tính số bước:**
+\`\`\`c
+long long steps = (1LL << n) - 1;
+// 1LL << n tương đương 2^n
+\`\`\`
+
+**Tính chất:**
+- Là ví dụ kinh điển của đệ quy
+- Độ phức tạp: O(2ⁿ)`,
         hints: ['hanoi(n) = 2 * hanoi(n-1) + 1', 'hanoi(1) = 1', 'Hoặc dùng công thức 2^n - 1'],
         starterCode: '#include <stdio.h>\n\nint main() {\n    int n;\n    scanf("%d", &n);\n    // Tính và in số bước\n    return 0;\n}',
         solution: `#include <stdio.h>

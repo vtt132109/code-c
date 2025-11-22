@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Code2, Trophy, Zap, BookOpen, ArrowRight, CheckCircle2, Star, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { NameModal } from '@/components/modals/NameModal'
+// import { NameModal } from '@/components/modals/NameModal'
+import { Navbar } from '@/components/Navbar'
 
 export default function Home() {
   const [modules, setModules] = useState<any[]>([])
@@ -62,22 +63,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white overflow-hidden font-sans selection:bg-blue-500/30">
-      <NameModal />
+      {/* NameModal removed as per user request */}
 
-      {/* Navbar */}
-      <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="font-bold text-xl tracking-tight">C-Mastery</div>
-          <div className="flex gap-6">
-            <Link href="/leaderboard" className="text-slate-300 hover:text-white transition-colors font-medium">
-              Bảng xếp hạng
-            </Link>
-            <Link href="#curriculum" className="text-slate-300 hover:text-white transition-colors font-medium">
-              Khóa học
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-32 px-4 overflow-hidden">
@@ -261,12 +249,9 @@ export default function Home() {
 
           <div className="space-y-8">
             {modules.map((module: any, idx: number) => (
-              <motion.div
+              <div
                 key={module.id}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
+                className="transform transition-all"
               >
                 <Card className="bg-slate-900/60 border-slate-700/50 backdrop-blur-md hover:border-blue-500/30 transition-all duration-300 overflow-hidden">
                   <CardHeader className="bg-slate-900/40 border-b border-slate-800/50 p-6">
@@ -326,7 +311,7 @@ export default function Home() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

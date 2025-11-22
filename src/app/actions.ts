@@ -6,20 +6,20 @@ const PISTON_URL = 'https://emkc.org/api/v2/piston/execute'
 
 async function runPiston(source_code: string, stdin: string) {
     // Use mock response in development to avoid rate limits
-    if (process.env.NODE_ENV === 'development') {
-        console.log('🔧 Development mode: Using mock compiler')
-        // Simulate compilation and execution
-        await new Promise(resolve => setTimeout(resolve, 100)) // Simulate delay
-
-        return {
-            run: {
-                stdout: stdin || '', // Echo input as output for testing
-                stderr: '',
-                code: 0,
-                output: stdin || ''
-            }
-        }
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     console.log('🔧 Development mode: Using mock compiler')
+    //     // Simulate compilation and execution
+    //     await new Promise(resolve => setTimeout(resolve, 100)) // Simulate delay
+    //
+    //     return {
+    //         run: {
+    //             stdout: stdin || '', // Echo input as output for testing
+    //             stderr: '',
+    //             code: 0,
+    //             output: stdin || ''
+    //         }
+    //     }
+    // }
 
     try {
         const response = await fetch(PISTON_URL, {
